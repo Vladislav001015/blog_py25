@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from applications.account.serializers import RegisterSerializer
+from applications.account.serializers import RegisterSerializer, LoginSerializer
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 
 User = get_user_model()
 
@@ -27,3 +30,19 @@ class ActivationView(APIView):
             return Response('Успешно', status=200)
         except User.DoesNotExist:
             return Response('Link expired', status=400)
+
+
+class LoginAPIView(ObtainAuthToken):
+    serializer_class = LoginSerializer
+
+
+class LogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = request.user # admin
+            Token.objects.get(user=user).delete()
+            return Response('Вы успешно разлогинились!', status=200)
+        except:
+            return Response(status=403)
