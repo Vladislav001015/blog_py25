@@ -1,9 +1,19 @@
 from rest_framework import serializers
-from applications.post.models import Post
+from applications.post.models import Post, PostImage
+
+
+class PostImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PostImage
+        fields = '__all__'
+        # fields = ('id', )
+        # exclude = ('post',)
 
 
 class PostSerializer(serializers.ModelSerializer):
     # owner = serializers.ReadOnlyField()
+    images = PostImageSerializer(many=True, read_only=True)
     owner = serializers.ReadOnlyField(source='owner.email')
 
     class Meta:

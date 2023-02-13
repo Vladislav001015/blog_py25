@@ -10,6 +10,7 @@ urlpatterns = [
     # path('delete/<int:pk>/', PostDeleteAPIView.as_view()),
     # path('detail/<int:id>/', PostDetailAPIView.as_view()),
     path('', PostListCreateAPIView.as_view()),
-    path('<int:pk>/', PostDetailDeleteUpdateAPIView.as_view())
+    path('<int:pk>/', PostDetailDeleteUpdateAPIView.as_view()),
+    path('add/image/', CreateImageAPIView.as_view())
 ]
 

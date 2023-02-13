@@ -1,6 +1,6 @@
 from rest_framework import generics
-from applications.post.models import Post
-from applications.post.serializers import PostSerializer
+from applications.post.models import Post, PostImage
+from applications.post.serializers import PostSerializer, PostImageSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from applications.post.permissions import IsOwner
 from django_filters.rest_framework import DjangoFilterBackend
@@ -68,3 +68,9 @@ class PostDetailDeleteUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwner]
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+
+class CreateImageAPIView(generics.CreateAPIView):
+    queryset = PostImage.objects.all()
+    serializer_class = PostImageSerializer
+    permission_classes = [IsAuthenticated]
