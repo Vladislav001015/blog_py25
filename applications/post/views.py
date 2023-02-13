@@ -1,12 +1,13 @@
 from rest_framework import generics
-from applications.post.models import Post, PostImage
-from applications.post.serializers import PostSerializer, PostImageSerializer
+from applications.post.models import Post, PostImage, Comment
+from applications.post.serializers import PostSerializer, PostImageSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from applications.post.permissions import IsOwner
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
-
+from rest_framework.viewsets import ViewSet, ModelViewSet
+from rest_framework.response import Response
 
 class CustomPagination(PageNumberPagination):
     page_size = 3
@@ -74,3 +75,16 @@ class CreateImageAPIView(generics.CreateAPIView):
     queryset = PostImage.objects.all()
     serializer_class = PostImageSerializer
     permission_classes = [IsAuthenticated]
+
+
+class CommentViewSet(ViewSet):
+    def list(self, request):
+        comments = Comment.objects.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
+
+class CommentModelViewSet(ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    

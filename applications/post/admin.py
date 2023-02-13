@@ -1,5 +1,5 @@
 from django.contrib import admin
-from applications.post.models import Post, PostImage
+from applications.post.models import *
 
 
 class ImageAdmin(admin.TabularInline):
@@ -16,3 +16,4 @@ class PostAdmin(admin.ModelAdmin):
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(PostImage)
+admin.site.register(Comment)
