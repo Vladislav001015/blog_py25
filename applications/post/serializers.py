@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from applications.post.models import Post, PostImage, Comment
 from applications.feedback.serializers import LikeSerializer
+from django.db.models import Avg
 
 class PostImageSerializer(serializers.ModelSerializer):
 
@@ -22,14 +23,31 @@ class PostSerializer(serializers.ModelSerializer):
         # fields = ('title',)
         fields = '__all__'
     
-    # def to_representation(self, instance):
-    #     # print(instance)
-    #     representation =  super().to_representation(instance)
-    #     # print(representation)
-    #     # representation['name'] = 'John'
-    #     # representation['owner'] = instance.owner.email
-    #     representation['owner'] = instance.owner.email
-    #     return representation
+    def to_representation(self, instance):
+        # print(instance)
+        representation =  super().to_representation(instance)
+        # print(representation)
+        representation['like_count'] = instance.likes.filter(is_like=True).count()
+
+        # rating_result = 0
+
+        # for rating in instance.ratings.all(): # post1 (r1 - 2, r2 - 2, r3 -2)
+        #     rating_result += rating.rating  # 6
+
+        # if rating_result:
+        #     representation['rating'] = rating_result / instance.ratings.all().count()  # 6 / 3 = 2
+        # else:
+        #     representation['rating'] = rating_result
+
+        representation['rating'] = instance.ratings.all().aggregate(Avg('rating'))['rating__avg']
+
+        # for like in representation['likes']:
+        #     if not like['is_like']:
+        #         representation['likes'].remove(like)
+
+        # representation['name'] = 'John'
+        # representation['owner'] = instance.owner.email
+        return representation
     
     # def create(self, validated_data):
     #     validated_data['owner'] = self.context['request'].user # request.user

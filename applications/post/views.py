@@ -1,7 +1,8 @@
 from rest_framework import generics
 from applications.post.models import Post, PostImage, Comment
-from applications.feedback.models import Like
+from applications.feedback.models import Like, Rating
 from applications.post.serializers import PostSerializer, PostImageSerializer, CommentSerializer
+from applications.feedback.serializers import RatingSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from applications.post.permissions import IsOwner
 from django_filters.rest_framework import DjangoFilterBackend
@@ -99,6 +100,19 @@ class PostModelViewSet(ModelViewSet):
             status = 'unliked'
 
         return Response({'status': status})
+    
+    @action(methods=['POST'], detail=True) # post/18/rating/
+    def rating(self, request, pk, *args, **kwargs):
+        serializer = RatingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        rating_obj, _ = Rating.objects.get_or_create(owner=request.user, post_id=pk)
+        # rating_obj, _ = Rating.objects.get_or_create(owner=request.user, post_id=pk, rating=3) 
+        rating_obj.rating = serializer.data['rating']
+        rating_obj.save()
+        return Response(serializer.data)
+
+
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
